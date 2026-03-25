@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scheduled Task Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --bg2: #16181c;
+    --bg3: #1e2126;
+    --border: #2a2d34;
+    --text: #e8eaf0;
+    --text2: #8b909e;
+    --text3: #555a66;
+    --green: #4ade80;
+    --green-bg: rgba(74,222,128,0.08);
+    --green-border: rgba(74,222,128,0.25);
+    --yellow: #fbbf24;
+    --yellow-bg: rgba(251,191,36,0.08);
+    --yellow-border: rgba(251,191,36,0.25);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.08);
+    --red-border: rgba(248,113,113,0.25);
+    --gray: #6b7280;
+    --gray-bg: rgba(107,114,128,0.08);
+    --gray-border: rgba(107,114,128,0.2);
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 32px; height: 32px; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 11px; color: var(--text2);
+  }
+  .header-title { font-size: 14px; font-weight: 500; letter-spacing: 0.02em; }
+  .header-sub { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .refresh-btn {
+    font-family: var(--mono); font-size: 11px; color: var(--text2);
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 6px 14px; cursor: pointer; letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+  .refresh-btn:hover { border-color: var(--text3); color: var(--text); }
+  .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .countdown { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    background: var(--bg);
+    padding: 16px 24px;
+  }
+  .stat-num { font-family: var(--mono); font-size: 28px; font-weight: 500; line-height: 1; }
+  .stat-num.green { color: var(--green); }
+  .stat-num.yellow { color: var(--yellow); }
+  .stat-num.red { color: var(--red); }
+  .stat-label { font-size: 11px; color: var(--text3); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .toolbar {
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text2); padding: 5px 12px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--text3); color: var(--text); }
+  .filter-btn.active { color: var(--text); border-color: var(--text2); background: var(--bg3); }
+  .filter-btn.active.green { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+  .filter-btn.active.yellow { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-bg); }
+  .filter-btn.active.red { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+  .search-input {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); padding: 5px 12px; width: 200px;
+    outline: none;
+  }
+  .search-input::placeholder { color: var(--text3); }
+  .search-input:focus { border-color: var(--text3); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    padding: 0;
+  }
+  .env-card {
+    background: var(--bg);
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: background 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .env-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .env-card.green::before { background: var(--green); }
+  .env-card.yellow::before { background: var(--yellow); }
+  .env-card.red::before { background: var(--red); }
+  .env-card.gray::before { background: var(--gray); }
+  .env-card:hover { background: var(--bg2); }
+  .env-card.green:hover { background: var(--green-bg); }
+  .env-card.yellow:hover { background: var(--yellow-bg); }
+  .env-card.red:hover { background: var(--red-bg); }
+
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .env-name { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; max-width: 160px; }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px;
+  }
+  .status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-dot.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+  .status-dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .status-dot.gray { background: var(--gray); }
+
+  .card-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .card-status.green { color: var(--green); }
+  .card-status.yellow { color: var(--yellow); }
+  .card-status.red { color: var(--red); }
+  .card-status.gray { color: var(--gray); }
+
+  .card-time { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+  .card-warn { font-size: 10px; color: var(--yellow); margin-top: 4px; font-family: var(--mono); }
+
+  .detail-panel {
+    position: fixed; top: 0; right: -420px; width: 380px; height: 100vh;
+    background: var(--bg2); border-left: 1px solid var(--border);
+    transition: right 0.25s ease; z-index: 100; overflow-y: auto;
+  }
+  .detail-panel.open { right: 0; }
+  .detail-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .detail-title { font-size: 14px; font-weight: 500; }
+  .close-btn {
+    font-family: var(--mono); font-size: 12px; color: var(--text3);
+    background: none; border: none; cursor: pointer; padding: 4px 8px;
+  }
+  .close-btn:hover { color: var(--text); }
+  .detail-body { padding: 20px 24px; }
+  .detail-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .detail-key { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 4px; }
+  .detail-val { font-size: 13px; color: var(--text); word-break: break-word; }
+  .detail-badge {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; padding: 3px 8px; text-transform: uppercase;
+  }
+  .detail-badge.green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .detail-badge.yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .detail-badge.red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .detail-badge.gray { background: var(--gray-bg); color: var(--gray); border: 1px solid var(--gray-border); }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+  .overlay.open { display: block; }
+
+  .empty { padding: 60px 32px; text-align: center; color: var(--text3); font-family: var(--mono); font-size: 13px; }
+
+  .error-bar {
+    background: var(--red-bg); border-bottom: 1px solid var(--red-border);
+    padding: 10px 32px; font-size: 12px; color: var(--red); font-family: var(--mono);
+    display: none;
+  }
+  .error-bar.show { display: block; }
+
+  .loading-bar {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 10px 32px; font-size: 12px; color: var(--text3); font-family: var(--mono);
+    display: none;
+  }
+  .loading-bar.show { display: block; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .pulsing { animation: pulse 1.5s infinite; }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .detail-panel { width: 100%; right: -100%; }
+    .header { padding: 14px 16px; }
+    .toolbar { padding: 10px 16px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">ST</div>
+    <div>
+      <div class="header-title">Scheduled Task Monitor</div>
+      <div class="header-sub" id="last-updated">connecting to sharepoint...</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="countdown" id="countdown"></span>
+    <button class="refresh-btn" id="refresh-btn" onclick="fetchData()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="error-bar" id="error-bar"></div>
+<div class="loading-bar pulsing" id="loading-bar">Fetching data from SharePoint...</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num" id="s-total">—</div><div class="stat-label">Environments</div></div>
+  <div class="stat"><div class="stat-num green" id="s-green">—</div><div class="stat-label">Completed</div></div>
+  <div class="stat"><div class="stat-num yellow" id="s-yellow">—</div><div class="stat-label">Delayed</div></div>
+  <div class="stat"><div class="stat-num red" id="s-red">—</div><div class="stat-label">No Signal</div></div>
+</div>
+
+<div class="toolbar">
+  <div class="filter-group">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn green" data-filter="green" onclick="setFilter('green',this)">Completed</button>
+    <button class="filter-btn yellow" data-filter="yellow" onclick="setFilter('yellow',this)">Delayed</button>
+    <button class="filter-btn red" data-filter="red" onclick="setFilter('red',this)">No Signal</button>
+    <button class="filter-btn" data-filter="warning" onclick="setFilter('warning',this)">Warnings</button>
+  </div>
+  <input class="search-input" id="search" placeholder="Search environment..." oninput="renderGrid()">
+</div>
+
+<div class="grid" id="env-grid">
+  <div class="empty">Loading environments...</div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-header">
+    <div class="detail-title" id="detail-title">—</div>
+    <button class="close-btn" onclick="closePanel()">✕ close</button>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+</div>
+
+<script>
+const SITE_URL = 'https://slimstocknl.sharepoint.com/sites/APAC';
+const LIST_NAME = 'ScheduledTaskStatus';
+const DELAY_MINUTES = 30;
+const NO_SIGNAL_MINUTES = 240;
+const REFRESH_SECONDS = 300;
+
+let allItems = [];
+let activeFilter = 'all';
+let countdown = REFRESH_SECONDS;
+let timer;
+
+function getStatus(item) {
+  const spStatus = (item.Status || '').toLowerCase();
+  if (spStatus === 'completed') return 'green';
+  if (spStatus === 'delayed') return 'yellow';
+  if (spStatus === 'warning') return 'yellow';
+  if (spStatus === 'no signal') return 'red';
+
+  // Fallback: derive from LastReceivedTime if Status not set
+  if (!item.LastReceivedTime) return 'red';
+  const minAgo = (Date.now() - new Date(item.LastReceivedTime).getTime()) / 60000;
+  if (minAgo > NO_SIGNAL_MINUTES) return 'red';
+  if (minAgo > DELAY_MINUTES) return 'yellow';
+  return 'green';
+}
+
+function statusLabel(s) {
+  return { green: 'Completed', yellow: 'Delayed', red: 'No signal', gray: 'Unknown' }[s] || 'Unknown';
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return 'never';
+  const m = Math.round((Date.now() - new Date(dateStr).getTime()) / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60), rm = m % 60;
+  return h + 'h' + (rm > 0 ? ' ' + rm + 'm' : '') + ' ago';
+}
+
+function fmtDateTime(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+async function fetchData() {
+  const btn = document.getElementById('refresh-btn');
+  const loading = document.getElementById('loading-bar');
+  const errorBar = document.getElementById('error-bar');
+  btn.disabled = true;
+  loading.classList.add('show');
+  errorBar.classList.remove('show');
+
+  try {
+    const url = `${SITE_URL}/_api/web/lists/getbytitle('${LIST_NAME}')/items?$select=Title,SenderEmail,LastSubject,LastReceivedTime,Status,HasWarning&$top=500&$orderby=Title asc`;
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json;odata=verbose' },
+      credentials: 'include'
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      throw new Error('Not signed in to SharePoint. Please open this file from within your SharePoint site or sign in first.');
+    }
+    if (!res.ok) throw new Error(`SharePoint returned ${res.status}. Check the site URL and list name.`);
+
+    const data = await res.json();
+    allItems = data.d.results;
+    renderGrid();
+    document.getElementById('last-updated').textContent =
+      'Last updated: ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    countdown = REFRESH_SECONDS;
+  } catch (err) {
+    errorBar.textContent = '⚠ ' + err.message;
+    errorBar.classList.add('show');
+    document.getElementById('last-updated').textContent = 'Failed to load';
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove('show');
+  }
+}
+
+function renderGrid() {
+  const grid = document.getElementById('env-grid');
+  const search = document.getElementById('search').value.toLowerCase();
+
+  const filtered = allItems.filter(item => {
+    const s = getStatus(item);
+    const name = (item.Title || '').toLowerCase();
+    const matchSearch = !search || name.includes(search) || (item.SenderEmail || '').toLowerCase().includes(search);
+    const matchFilter =
+      activeFilter === 'all' ||
+      (activeFilter === 'green' && s === 'green') ||
+      (activeFilter === 'yellow' && s === 'yellow') ||
+      (activeFilter === 'red' && s === 'red') ||
+      (activeFilter === 'warning' && item.HasWarning);
+    return matchSearch && matchFilter;
+  });
+
+  let green = 0, yellow = 0, red = 0;
+  allItems.forEach(i => {
+    const s = getStatus(i);
+    if (s === 'green') green++;
+    else if (s === 'yellow') yellow++;
+    else red++;
+  });
+  document.getElementById('s-total').textContent = allItems.length;
+  document.getElementById('s-green').textContent = green;
+  document.getElementById('s-yellow').textContent = yellow;
+  document.getElementById('s-red').textContent = red;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty">No environments match this filter.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map((item, idx) => {
+    const s = getStatus(item);
+    return `
+      <div class="env-card ${s}" onclick="openPanel(${allItems.indexOf(item)})">
+        <div class="card-top">
+          <div class="env-name">${item.Title || 'Unnamed'}</div>
+          <div class="status-dot ${s}"></div>
+        </div>
+        <div class="card-status ${s}">${statusLabel(s)}</div>
+        <div class="card-time">${timeAgo(item.LastReceivedTime)}</div>
+        ${item.HasWarning ? '<div class="card-warn">⚠ warnings</div>' : ''}
+      </div>`;
+  }).join('');
+}
+
+function openPanel(idx) {
+  const item = allItems[idx];
+  const s = getStatus(item);
+  document.getElementById('detail-title').textContent = item.Title || 'Unnamed';
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-row">
+      <div class="detail-key">Status</div>
+      <div class="detail-val"><span class="detail-badge ${s}">${statusLabel(s)}</span></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">Last email received</div>
+      <div class="detail-val">${fmtDateTime(item.LastReceivedTime)} <span style="color:var(--text3);font-size:11px;font-family:var(--mono)">(${timeAgo(item.LastReceivedTime)})</span></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">Last subject</div>
+      <div class="detail-val" style="font-size:12px;line-height:1.5">${item.LastSubject || '—'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">Sender email</div>
+      <div class="detail-val" style="font-size:12px;font-family:var(--mono)">${item.SenderEmail || '—'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">Warnings</div>
+      <div class="detail-val">${item.HasWarning ? '<span style="color:var(--yellow)">Yes</span>' : '<span style="color:var(--text3)">No</span>'}</div>
+    </div>
+  `;
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+setInterval(() => {
+  countdown--;
+  if (countdown <= 0) { fetchData(); countdown = REFRESH_SECONDS; }
+  document.getElementById('countdown').textContent = countdown + 's';
+}, 1000);
+
+fetchData();
+</script>
+</body>
+</html>
