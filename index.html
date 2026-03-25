@@ -35,99 +35,41 @@
   .header {
     border-bottom: 1px solid var(--border);
     padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
   }
   .header-left { display: flex; align-items: center; gap: 14px; }
-  .logo {
-    width: 32px; height: 32px; border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 11px; color: var(--text2);
-  }
+  .logo { width: 32px; height: 32px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; color: var(--text2); }
   .header-title { font-size: 14px; font-weight: 500; letter-spacing: 0.02em; }
   .header-sub { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 1px; }
   .header-right { display: flex; align-items: center; gap: 10px; }
-  .refresh-btn {
-    font-family: var(--mono); font-size: 11px; color: var(--text2);
-    background: var(--bg2); border: 1px solid var(--border);
-    padding: 6px 14px; cursor: pointer; letter-spacing: 0.05em;
-    transition: all 0.15s;
-  }
+  .refresh-btn { font-family: var(--mono); font-size: 11px; color: var(--text2); background: var(--bg2); border: 1px solid var(--border); padding: 6px 14px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.15s; }
   .refresh-btn:hover { border-color: var(--text3); color: var(--text); }
   .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .countdown { font-family: var(--mono); font-size: 11px; color: var(--text3); }
 
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .stat {
-    background: var(--bg);
-    padding: 16px 24px;
-  }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
+  .stat { background: var(--bg); padding: 16px 24px; }
   .stat-num { font-family: var(--mono); font-size: 28px; font-weight: 500; line-height: 1; }
   .stat-num.green { color: var(--green); }
   .stat-num.yellow { color: var(--yellow); }
   .stat-num.red { color: var(--red); }
   .stat-label { font-size: 11px; color: var(--text3); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
 
-  .toolbar {
-    padding: 14px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+  .toolbar { padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
   .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
-  .filter-btn {
-    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
-    background: transparent; border: 1px solid var(--border);
-    color: var(--text2); padding: 5px 12px; cursor: pointer;
-    transition: all 0.15s;
-  }
+  .filter-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; background: transparent; border: 1px solid var(--border); color: var(--text2); padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
   .filter-btn:hover { border-color: var(--text3); color: var(--text); }
   .filter-btn.active { color: var(--text); border-color: var(--text2); background: var(--bg3); }
   .filter-btn.active.green { border-color: var(--green); color: var(--green); background: var(--green-bg); }
   .filter-btn.active.yellow { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-bg); }
   .filter-btn.active.red { border-color: var(--red); color: var(--red); background: var(--red-bg); }
-  .search-input {
-    font-family: var(--mono); font-size: 12px;
-    background: var(--bg2); border: 1px solid var(--border);
-    color: var(--text); padding: 5px 12px; width: 200px;
-    outline: none;
-  }
+  .search-input { font-family: var(--mono); font-size: 12px; background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 5px 12px; width: 200px; outline: none; }
   .search-input::placeholder { color: var(--text3); }
   .search-input:focus { border-color: var(--text3); }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    padding: 0;
-  }
-  .env-card {
-    background: var(--bg);
-    padding: 18px 20px;
-    cursor: pointer;
-    transition: background 0.1s;
-    position: relative;
-    overflow: hidden;
-  }
-  .env-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px; background: var(--border); }
+  .env-card { background: var(--bg); padding: 18px 20px; cursor: pointer; transition: background 0.1s; position: relative; overflow: hidden; }
+  .env-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .env-card.green::before { background: var(--green); }
   .env-card.yellow::before { background: var(--yellow); }
   .env-card.red::before { background: var(--red); }
@@ -139,9 +81,7 @@
 
   .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
   .env-name { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; max-width: 160px; }
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px;
-  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
   .status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
   .status-dot.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
   .status-dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
@@ -152,34 +92,20 @@
   .card-status.yellow { color: var(--yellow); }
   .card-status.red { color: var(--red); }
   .card-status.gray { color: var(--gray); }
-
   .card-time { font-family: var(--mono); font-size: 11px; color: var(--text3); }
   .card-warn { font-size: 10px; color: var(--yellow); margin-top: 4px; font-family: var(--mono); }
 
-  .detail-panel {
-    position: fixed; top: 0; right: -420px; width: 380px; height: 100vh;
-    background: var(--bg2); border-left: 1px solid var(--border);
-    transition: right 0.25s ease; z-index: 100; overflow-y: auto;
-  }
+  .detail-panel { position: fixed; top: 0; right: -420px; width: 380px; height: 100vh; background: var(--bg2); border-left: 1px solid var(--border); transition: right 0.25s ease; z-index: 100; overflow-y: auto; }
   .detail-panel.open { right: 0; }
-  .detail-header {
-    padding: 20px 24px; border-bottom: 1px solid var(--border);
-    display: flex; justify-content: space-between; align-items: center;
-  }
+  .detail-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
   .detail-title { font-size: 14px; font-weight: 500; }
-  .close-btn {
-    font-family: var(--mono); font-size: 12px; color: var(--text3);
-    background: none; border: none; cursor: pointer; padding: 4px 8px;
-  }
+  .close-btn { font-family: var(--mono); font-size: 12px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 4px 8px; }
   .close-btn:hover { color: var(--text); }
   .detail-body { padding: 20px 24px; }
   .detail-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
   .detail-key { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 4px; }
   .detail-val { font-size: 13px; color: var(--text); word-break: break-word; }
-  .detail-badge {
-    display: inline-block; font-family: var(--mono); font-size: 10px;
-    letter-spacing: 0.08em; padding: 3px 8px; text-transform: uppercase;
-  }
+  .detail-badge { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 3px 8px; text-transform: uppercase; }
   .detail-badge.green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
   .detail-badge.yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
   .detail-badge.red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
@@ -187,26 +113,13 @@
 
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
   .overlay.open { display: block; }
-
   .empty { padding: 60px 32px; text-align: center; color: var(--text3); font-family: var(--mono); font-size: 13px; }
-
-  .error-bar {
-    background: var(--red-bg); border-bottom: 1px solid var(--red-border);
-    padding: 10px 32px; font-size: 12px; color: var(--red); font-family: var(--mono);
-    display: none;
-  }
+  .error-bar { background: var(--red-bg); border-bottom: 1px solid var(--red-border); padding: 10px 32px; font-size: 12px; color: var(--red); font-family: var(--mono); display: none; }
   .error-bar.show { display: block; }
-
-  .loading-bar {
-    background: var(--bg2); border-bottom: 1px solid var(--border);
-    padding: 10px 32px; font-size: 12px; color: var(--text3); font-family: var(--mono);
-    display: none;
-  }
+  .loading-bar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 10px 32px; font-size: 12px; color: var(--text3); font-family: var(--mono); display: none; }
   .loading-bar.show { display: block; }
-
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .pulsing { animation: pulse 1.5s infinite; }
-
   @media (max-width: 600px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
     .detail-panel { width: 100%; right: -100%; }
@@ -223,7 +136,7 @@
     <div class="logo">ST</div>
     <div>
       <div class="header-title">Scheduled Task Monitor</div>
-      <div class="header-sub" id="last-updated">connecting to sharepoint...</div>
+      <div class="header-sub" id="last-updated">connecting...</div>
     </div>
   </div>
   <div class="header-right">
@@ -244,11 +157,11 @@
 
 <div class="toolbar">
   <div class="filter-group">
-    <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
-    <button class="filter-btn green" data-filter="green" onclick="setFilter('green',this)">Completed</button>
-    <button class="filter-btn yellow" data-filter="yellow" onclick="setFilter('yellow',this)">Delayed</button>
-    <button class="filter-btn red" data-filter="red" onclick="setFilter('red',this)">No Signal</button>
-    <button class="filter-btn" data-filter="warning" onclick="setFilter('warning',this)">Warnings</button>
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn green" onclick="setFilter('green',this)">Completed</button>
+    <button class="filter-btn yellow" onclick="setFilter('yellow',this)">Delayed</button>
+    <button class="filter-btn red" onclick="setFilter('red',this)">No Signal</button>
+    <button class="filter-btn" onclick="setFilter('warning',this)">Warnings</button>
   </div>
   <input class="search-input" id="search" placeholder="Search environment..." oninput="renderGrid()">
 </div>
@@ -267,29 +180,23 @@
 </div>
 
 <script>
-const SITE_URL = 'https://slimstocknl.sharepoint.com/sites/APAC';
-const LIST_NAME = 'ScheduledTaskStatus';
-const DELAY_MINUTES = 30;
-const NO_SIGNAL_MINUTES = 240;
+const PROXY = 'https://sharepoint-proxy.waleedrehmankhan.workers.dev';
+const SP_LIST_PATH = "/_api/web/lists/getbytitle('ScheduledTaskStatus')/items?$select=Title,SenderEmail,LastSubject,LastReceivedTime,Status,HasWarning&$top=500&$orderby=Title asc";
 const REFRESH_SECONDS = 300;
 
 let allItems = [];
 let activeFilter = 'all';
 let countdown = REFRESH_SECONDS;
-let timer;
 
 function getStatus(item) {
-  const spStatus = (item.Status || '').toLowerCase();
-  if (spStatus === 'completed') return 'green';
-  if (spStatus === 'delayed') return 'yellow';
-  if (spStatus === 'warning') return 'yellow';
-  if (spStatus === 'no signal') return 'red';
-
-  // Fallback: derive from LastReceivedTime if Status not set
+  const s = (item.Status || '').toLowerCase();
+  if (s === 'completed') return 'green';
+  if (s === 'delayed' || s === 'warning') return 'yellow';
+  if (s === 'no signal') return 'red';
   if (!item.LastReceivedTime) return 'red';
   const minAgo = (Date.now() - new Date(item.LastReceivedTime).getTime()) / 60000;
-  if (minAgo > NO_SIGNAL_MINUTES) return 'red';
-  if (minAgo > DELAY_MINUTES) return 'yellow';
+  if (minAgo > 240) return 'red';
+  if (minAgo > 30) return 'yellow';
   return 'green';
 }
 
@@ -320,27 +227,37 @@ async function fetchData() {
   errorBar.classList.remove('show');
 
   try {
-    const url = `${SITE_URL}/_api/web/lists/getbytitle('${LIST_NAME}')/items?$select=Title,SenderEmail,LastSubject,LastReceivedTime,Status,HasWarning&$top=500&$orderby=Title asc`;
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/json;odata=verbose' },
-      credentials: 'include'
+    const proxyUrl = `${PROXY}?path=${encodeURIComponent(SP_LIST_PATH)}`;
+    const res = await fetch(proxyUrl, {
+      credentials: 'include',
+      headers: { 'Accept': 'application/json' }
     });
 
     if (res.status === 401 || res.status === 403) {
-      throw new Error('Not signed in to SharePoint. Please open this file from within your SharePoint site or sign in first.');
+      throw new Error('Not authenticated. Please open sharepoint.com first to sign in, then come back here.');
     }
-    if (!res.ok) throw new Error(`SharePoint returned ${res.status}. Check the site URL and list name.`);
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Request failed (${res.status}). ${txt.slice(0, 120)}`);
+    }
 
     const data = await res.json();
-    allItems = data.d.results;
+    allItems = data.d ? data.d.results : (data.value || []);
+
+    if (allItems.length === 0) {
+      throw new Error('List returned 0 items. Check the list name is exactly "ScheduledTaskStatus" and has rows.');
+    }
+
     renderGrid();
     document.getElementById('last-updated').textContent =
       'Last updated: ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     countdown = REFRESH_SECONDS;
+
   } catch (err) {
     errorBar.textContent = '⚠ ' + err.message;
     errorBar.classList.add('show');
     document.getElementById('last-updated').textContent = 'Failed to load';
+    document.getElementById('env-grid').innerHTML = '<div class="empty">Could not load data. See error above.</div>';
   } finally {
     btn.disabled = false;
     loading.classList.remove('show');
@@ -350,6 +267,19 @@ async function fetchData() {
 function renderGrid() {
   const grid = document.getElementById('env-grid');
   const search = document.getElementById('search').value.toLowerCase();
+  let green = 0, yellow = 0, red = 0;
+
+  allItems.forEach(i => {
+    const s = getStatus(i);
+    if (s === 'green') green++;
+    else if (s === 'yellow') yellow++;
+    else red++;
+  });
+
+  document.getElementById('s-total').textContent = allItems.length;
+  document.getElementById('s-green').textContent = green;
+  document.getElementById('s-yellow').textContent = yellow;
+  document.getElementById('s-red').textContent = red;
 
   const filtered = allItems.filter(item => {
     const s = getStatus(item);
@@ -364,27 +294,16 @@ function renderGrid() {
     return matchSearch && matchFilter;
   });
 
-  let green = 0, yellow = 0, red = 0;
-  allItems.forEach(i => {
-    const s = getStatus(i);
-    if (s === 'green') green++;
-    else if (s === 'yellow') yellow++;
-    else red++;
-  });
-  document.getElementById('s-total').textContent = allItems.length;
-  document.getElementById('s-green').textContent = green;
-  document.getElementById('s-yellow').textContent = yellow;
-  document.getElementById('s-red').textContent = red;
-
   if (filtered.length === 0) {
     grid.innerHTML = '<div class="empty">No environments match this filter.</div>';
     return;
   }
 
-  grid.innerHTML = filtered.map((item, idx) => {
+  grid.innerHTML = filtered.map(item => {
     const s = getStatus(item);
+    const idx = allItems.indexOf(item);
     return `
-      <div class="env-card ${s}" onclick="openPanel(${allItems.indexOf(item)})">
+      <div class="env-card ${s}" onclick="openPanel(${idx})">
         <div class="card-top">
           <div class="env-name">${item.Title || 'Unnamed'}</div>
           <div class="status-dot ${s}"></div>
@@ -401,26 +320,11 @@ function openPanel(idx) {
   const s = getStatus(item);
   document.getElementById('detail-title').textContent = item.Title || 'Unnamed';
   document.getElementById('detail-body').innerHTML = `
-    <div class="detail-row">
-      <div class="detail-key">Status</div>
-      <div class="detail-val"><span class="detail-badge ${s}">${statusLabel(s)}</span></div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-key">Last email received</div>
-      <div class="detail-val">${fmtDateTime(item.LastReceivedTime)} <span style="color:var(--text3);font-size:11px;font-family:var(--mono)">(${timeAgo(item.LastReceivedTime)})</span></div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-key">Last subject</div>
-      <div class="detail-val" style="font-size:12px;line-height:1.5">${item.LastSubject || '—'}</div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-key">Sender email</div>
-      <div class="detail-val" style="font-size:12px;font-family:var(--mono)">${item.SenderEmail || '—'}</div>
-    </div>
-    <div class="detail-row">
-      <div class="detail-key">Warnings</div>
-      <div class="detail-val">${item.HasWarning ? '<span style="color:var(--yellow)">Yes</span>' : '<span style="color:var(--text3)">No</span>'}</div>
-    </div>
+    <div class="detail-row"><div class="detail-key">Status</div><div class="detail-val"><span class="detail-badge ${s}">${statusLabel(s)}</span></div></div>
+    <div class="detail-row"><div class="detail-key">Last email received</div><div class="detail-val">${fmtDateTime(item.LastReceivedTime)} <span style="color:var(--text3);font-size:11px;font-family:var(--mono)">(${timeAgo(item.LastReceivedTime)})</span></div></div>
+    <div class="detail-row"><div class="detail-key">Last subject</div><div class="detail-val" style="font-size:12px;line-height:1.5">${item.LastSubject || '—'}</div></div>
+    <div class="detail-row"><div class="detail-key">Sender email</div><div class="detail-val" style="font-size:12px;font-family:var(--mono)">${item.SenderEmail || '—'}</div></div>
+    <div class="detail-row"><div class="detail-key">Warnings</div><div class="detail-val">${item.HasWarning ? '<span style="color:var(--yellow)">Yes</span>' : '<span style="color:var(--text3)">No</span>'}</div></div>
   `;
   document.getElementById('detail-panel').classList.add('open');
   document.getElementById('overlay').classList.add('open');
