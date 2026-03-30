@@ -54,6 +54,13 @@
   .header-title { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
   .header-sub { font-size: 12px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
   .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .demo-badge {
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    background: #fff3cd; color: #7a4f00; border: 1px solid #f0c05a;
+    padding: 3px 10px; border-radius: 20px;
+  }
+
   .refresh-btn {
     display: flex; align-items: center; gap: 6px;
     font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
@@ -197,6 +204,7 @@
     </div>
   </div>
   <div class="header-right">
+    <span class="demo-badge">Demo Mode</span>
     <span class="last-updated" id="last-updated">—</span>
     <button class="refresh-btn" id="refresh-btn" onclick="loadData()">
       <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
@@ -238,15 +246,134 @@
 </div>
 
 <script>
-  const SITE_URL   = 'https://slimstocknl.sharepoint.com/sites/APAC';
-  const LOG_LIST   = 'ScheduledTaskLog';
-  const LOOKUP_LIST = 'EnvironmentLookup';
+  // ─── DEMO DATA ────────────────────────────────────────────────────────────
+  // Timestamps are generated relative to "now" so statuses always look realistic.
+  // Green  = received recently (< 4h ago)
+  // Yellow = received 4–6h ago
+  // Red    = HasFailed=Yes OR received before midnight
+  // Gray   = no email at all
 
+  function hoursAgo(h) {
+    return new Date(Date.now() - h * 3600000).toISOString();
+  }
+  function minutesAgo(m) {
+    return new Date(Date.now() - m * 60000).toISOString();
+  }
+
+  const DEMO_DATA = [
+    // ── Green (completed today, recent) ──────────────────────────────────────
+    {
+      EnvironmentName: "Bidfood NZ",
+      SenderEmail: "slim4server@bidfood.co.nz",
+      ReceivedDateTime: minutesAgo(22),
+      Subject: "SCHEDULED TASK COMPLETED : 11:30am Batch Export",
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "AS Watson SG",
+      SenderEmail: "slim4serverSG@aswatson.com",
+      ReceivedDateTime: minutesAgo(48),
+      Subject: "SCHEDULED TASK COMPLETED : Daily Calculations",
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "Lotte Mart KR",
+      SenderEmail: "slim4@lottemart.co.kr",
+      ReceivedDateTime: hoursAgo(1),
+      Subject: "SCHEDULED TASK COMPLETED : Nightly Stock Sync",
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "Metro AG DE",
+      SenderEmail: "slim4server@metro.de",
+      ReceivedDateTime: hoursAgo(2),
+      Subject: "SCHEDULED TASK COMPLETED : Promotion Import",
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "Woolworths AU",
+      SenderEmail: "slim4@woolworths.com.au",
+      ReceivedDateTime: hoursAgo(1.5),
+      Subject: "SCHEDULED TASK COMPLETED : Daily Replenishment",
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "Pick n Pay ZA",
+      SenderEmail: "slim4server@pnp.co.za",
+      ReceivedDateTime: minutesAgo(65),
+      Subject: "SCHEDULED TASK COMPLETED : Sales Data Export",
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "NTUC Fairprice SG",
+      SenderEmail: "slim4@fairprice.com.sg",
+      ReceivedDateTime: hoursAgo(3),
+      Subject: "SCHEDULED TASK COMPLETED : Basket Analysis",
+      HasFailed: "No"
+    },
+
+    // ── Yellow (delayed — 4–6h ago) ───────────────────────────────────────────
+    {
+      EnvironmentName: "Bidfood SG",
+      SenderEmail: "slim4server@bidfood.com.sg",
+      ReceivedDateTime: hoursAgo(4.5),
+      Subject: "SCHEDULED TASK COMPLETED : Daily Import",
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "Giant MY",
+      SenderEmail: "slim4@giant.com.my",
+      ReceivedDateTime: hoursAgo(5.2),
+      Subject: "SCHEDULED TASK COMPLETED : Weekly Ranging",
+      HasFailed: "No"
+    },
+
+    // ── Red (failed or no signal) ─────────────────────────────────────────────
+    {
+      EnvironmentName: "Garuda Food ID",
+      SenderEmail: "gita@garudafood.co.id",
+      ReceivedDateTime: hoursAgo(8),
+      Subject: "SCHEDULED TASK FAILED : Daily Import",
+      HasFailed: "Yes"
+    },
+    {
+      EnvironmentName: "Carrefour SA",
+      SenderEmail: "slim4@carrefoursa.com",
+      ReceivedDateTime: hoursAgo(9),
+      Subject: "SCHEDULED TASK FAILED : Nightly Calculations **WITH WARNINGS**",
+      HasFailed: "Yes"
+    },
+    {
+      EnvironmentName: "Shoprite ZA",
+      SenderEmail: "slim4server@shoprite.co.za",
+      ReceivedDateTime: hoursAgo(7),
+      Subject: "SCHEDULED TASK FAILED : Promo Export **WITH DO NOT RUN TASK**",
+      HasFailed: "Yes"
+    },
+
+    // ── Gray (no email at all) ────────────────────────────────────────────────
+    {
+      EnvironmentName: "Spar NL",
+      SenderEmail: "slim4@spar.nl",
+      ReceivedDateTime: null,
+      Subject: null,
+      HasFailed: "No"
+    },
+    {
+      EnvironmentName: "IGA AU",
+      SenderEmail: "slim4server@iga.com.au",
+      ReceivedDateTime: null,
+      Subject: null,
+      HasFailed: "No"
+    }
+  ];
+  // ──────────────────────────────────────────────────────────────────────────
+
+  // Status thresholds (hours)
   const YELLOW_HOURS = 4;
   const RED_HOURS    = 6;
 
   let allEnvs = [];
-  let lookupMap = {};
   let currentFilter = 'all';
   let currentSearch = '';
 
@@ -264,7 +391,7 @@
   }
 
   function statusLabel(s) {
-    return { green: 'Completed', yellow: 'Delayed', red: 'No signal', gray: 'No data' }[s];
+    return { green: 'Completed', yellow: 'Delayed', red: 'Failed', gray: 'No data' }[s];
   }
 
   function formatTime(iso) {
@@ -284,51 +411,23 @@
       .replace('SCHEDULED TASK COMPLETED:', '')
       .replace('**WITH WARNINGS**', '⚠ With warnings')
       .replace('**WITH DO NOT RUN TASK**', '⛔ Do not run')
-      .replace('SCHEDULED TASK FAILED :', 'FAILED:')
+      .replace('SCHEDULED TASK FAILED :', '⚠ FAILED:')
+      .replace('SCHEDULED TASK FAILED:', '⚠ FAILED:')
       .trim();
   }
 
-  async function fetchList(listName, select, filter) {
-    let url = `${SITE_URL}/_api/web/lists/getbytitle('${listName}')/items?$select=${select}&$top=1000`;
-    if (filter) url += `&$filter=${encodeURIComponent(filter)}`;
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/json;odata=verbose' },
-      credentials: 'include'
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    return json.d.results;
-  }
-
-  async function loadData() {
+  function loadData() {
     const btn = document.getElementById('refresh-btn');
     btn.classList.add('spinning');
     document.getElementById('last-updated').textContent = 'Refreshing...';
 
-    try {
-      const lookupItems = await fetchList(LOOKUP_LIST, 'Title,EnvironmentName', '');
-      lookupMap = {};
-      lookupItems.forEach(i => { if (i.Title) lookupMap[i.Title.toLowerCase()] = i.EnvironmentName || i.Title; });
-
-      const logItems = await fetchList(LOG_LIST, 'Title,SenderEmail,ReceivedDateTime,Subject,HasFailed', '');
-
-      const latestBySender = {};
-      logItems.forEach(row => {
-        const key = (row.SenderEmail || '').toLowerCase();
-        if (!key) return;
-        if (!latestBySender[key] || new Date(row.ReceivedDateTime) > new Date(latestBySender[key].ReceivedDateTime)) {
-          latestBySender[key] = row;
-        }
-      });
-
-      allEnvs = Object.values(latestBySender).map(row => {
-        const emailKey = (row.SenderEmail || '').toLowerCase();
-        const displayName = lookupMap[emailKey] || row.Title || row.SenderEmail || 'Unknown';
-        return { ...row, displayName };
-      });
-
+    // Simulate a short load delay for realism
+    setTimeout(() => {
       const order = { red: 0, yellow: 1, green: 2, gray: 3 };
-      allEnvs.sort((a, b) => {
+      allEnvs = DEMO_DATA.map(row => ({
+        ...row,
+        displayName: row.EnvironmentName || row.SenderEmail || 'Unknown'
+      })).sort((a, b) => {
         const sd = order[getStatus(a)] - order[getStatus(b)];
         return sd !== 0 ? sd : a.displayName.localeCompare(b.displayName);
       });
@@ -337,18 +436,8 @@
       renderTiles();
       document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
       document.getElementById('env-count').textContent = allEnvs.length + ' environments tracked';
-
-    } catch (err) {
-      document.getElementById('tile-grid').innerHTML = `
-        <div class="state-box">
-          <div class="state-icon">⚠</div>
-          <div class="state-title">Could not load data</div>
-          <div class="state-desc">Make sure this page is hosted on SharePoint and you are logged in.<br><small style="font-family:monospace;font-size:11px;">${err.message}</small></div>
-        </div>`;
-      document.getElementById('last-updated').textContent = 'Load failed';
-    }
-
-    btn.classList.remove('spinning');
+      btn.classList.remove('spinning');
+    }, 500);
   }
 
   function updateSummary() {
@@ -413,8 +502,8 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // Init
   loadData();
-  setInterval(loadData, 5 * 60 * 1000); // auto-refresh every 5 min
 </script>
 </body>
 </html>
